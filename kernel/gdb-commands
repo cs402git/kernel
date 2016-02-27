@@ -1,0 +1,10 @@
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/main/gdt.gdb
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/mm/pagetable.gdb
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/mm/memcheck.py
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/mm/page.py
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/mm/slab.py
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/proc/kthread.gdb
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/proc/proc.py
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/util/debug.py
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/util/list.py
+/home/zli652/weenix-assignment-2.6.0/weenix/kernel/vm/vmmap.gdb
