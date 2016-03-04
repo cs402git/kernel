@@ -180,7 +180,22 @@ bootstrap(int arg1, void *arg2)
         /* necessary to finalize page table information */
         pt_template_init();
 
-        NOT_YET_IMPLEMENTED("PROCS: bootstrap");
+        /*NOT_YET_IMPLEMENTED("PROCS: bootstrap");*/
+
+        /*create idleProcess, whose PID is 0*/
+        proc_t *idleProcess = proc_create("idle_process");
+        KASSERT(idleProcess -> p_pid == PID_IDLE && "PID of idleProcess is not 0");
+
+        /*attach the idleThread to the idleProcess*/
+        kthread_t *idleThread = kthread_create(idleProcess, idleproc_run, 0, NULL);
+        KASSERT(idleThread != NULL && "Failed when attach the idleThread to the idleProcess");
+
+        /* Makes the given context the one currently running on the CPU. Use
+         * this mainly for the initial context.*/
+        context_make_active(&(idleThread -> kt_ctx));
+
+        curproc = idleProcess;
+        curthr = idleThread;
 
         panic("weenix returned to bootstrap()!!! BAD!!!\n");
         return NULL;
@@ -220,6 +235,7 @@ idleproc_run(int arg1, void *arg2)
         /* You can't do this until you have VFS, check the include/drivers/dev.h
          * file for macros with the device ID's you will need to pass to mknod */
         NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+
 #endif
 
         /* Finally, enable interrupts (we want to make sure interrupts
@@ -275,8 +291,16 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_create");
-        return NULL;
+        /*NOT_YET_IMPLEMENTED("PROCS: initproc_create");*/
+    	/*create initProcess, whose PID is 1*/
+        proc_t *initProcess = proc_create("init_process");
+        KASSERT(initProcess -> p_pid == PID_INIT && "PID of idleProcess is not 0");
+
+        /*attach the initThread to the initProcess*/
+        kthread_t *initThread = kthread_create(initProcess, initproc_run, 0, NULL);
+        KASSERT(initThread != NULL && "Failed when attach the initThread to the initProcess");
+
+        return initThread;
 }
 
 /**
@@ -293,7 +317,42 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_run");
+        /*NOT_YET_IMPLEMENTED("PROCS: initproc_run");*/
+#ifdef __DRIVERS__
+
+		/*add your own command to the shell*/
+    	kshell_add_command("foo", do_foo, "invoke do_foo() to print a message...");
+
+    	/*create a kshell on a tty*/
+    	kshell_t *kshell = kshell_create(0);
+    	if (NULL == kshell) {
+    		panic("init: Couldn't create kernel shell\n");
+    	}
+
+    	/*run kshell commands until user exits*/
+    	while (kshell_execute_next(kshell));
+    	kshell_destroy(kshell);
+
+#endif /* __DRIVERS__ */
 
         return NULL;
 }
+
+
+#ifdef __DRIVERS__
+
+	/*define do_foo function*/
+    int do_foo(kshell_t *kshell, int argc, char **argv)
+    {
+        KASSERT(kshell != NULL);
+        dbg(DBG_PRINT, "(GRADING#X Y.Z): do_foo() is invoked, argc = %d, argv = 0x%08x\n",
+                argc, (unsigned int)argv);
+        /*
+         * Shouldn't call a test function directly.
+         * It's best to invoke it in a separate kernel process.
+         */
+        return 0;
+    }
+
+#endif /* __DRIVERS__ */
+
